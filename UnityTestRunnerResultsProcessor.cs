@@ -87,7 +87,7 @@ namespace UnityTestRunnerResultsReporter
             var templatePath = AppDomain.CurrentDomain.BaseDirectory;
             if (!File.Exists(Path.Combine(templatePath, "TestReport.html")) || !Directory.Exists(Path.Combine(templatePath, "TestReport.files")))
             {
-                throw new Exception("Cannot find test report template files.");
+                throw new Exception("Cannot find test report template files at " + templatePath);
             }
 
             try

@@ -19,7 +19,7 @@ namespace UnityTestRunnerResultsReporter
             var testResultXML = TryLoadResultXmlFile(processor.XMLFilePath);
 
             this.resultsPath = processor.ReportPath;
-            
+
             var testSummary = TryParseTestSummary(testResultXML);
             processor.AddTestSummaryToTestResult(testSummary);
 
@@ -107,18 +107,9 @@ namespace UnityTestRunnerResultsReporter
             {
                 if (prop.Attribute("name").Value == "Image" || prop.Attribute("name").Value == "DiffImage")
                 {
-                    var image = Convert.FromBase64String(prop.Attribute("value").Value);
-                    var imageName = prop.Attribute("name").Value == "Image" ? testCaseResult.name + ".png" : testCaseResult.name + "-diff.png";
-                    var imagePath = Path.Combine(resultsPath, "ResultImages");
+                    var imageName = prop.Attribute("value").Value;
 
-                    if (!Directory.Exists(imagePath))
-                        Directory.CreateDirectory(imagePath);
-
-                    var fullPath = Path.Combine(imagePath, imageName);
-
-                    File.WriteAllBytes(Path.Combine(fullPath), image);
-
-                    testCaseResult.artifacts.Add(fullPath);
+                    testCaseResult.artifacts.Add(imageName);
                 }
             }
 
