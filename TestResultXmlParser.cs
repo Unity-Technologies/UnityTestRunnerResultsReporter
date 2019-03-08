@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -10,12 +11,15 @@ namespace UnityTestRunnerResultsReporter
     class TestResultXmlParser
     {
         private string testProject = string.Empty;
+        private string resultsPath;
 
         public void ParseTestResults(UnityTestRunnerResultsProcessor processor)
         {
             this.testProject = processor.TestProjectName;
             var testResultXML = TryLoadResultXmlFile(processor.XMLFilePath);
-            
+
+            this.resultsPath = processor.ReportPath;
+
             var testSummary = TryParseTestSummary(testResultXML);
             processor.AddTestSummaryToTestResult(testSummary);
 
@@ -86,11 +90,29 @@ namespace UnityTestRunnerResultsReporter
         {
             TestCase testCaseResult = new TestCase();
             testCaseResult.name = tc.Attribute("fullname").Value;
+
+            // sometimes test methods can make their own test cases as in the playmode graphics tests
+            // this causes the full names to be the same for all of them, so tack on the case name
+            if (tc.Attribute("name").Value != tc.Attribute("methodname").Value)
+                testCaseResult.name += "." + tc.Attribute("name").Value;
+
             testCaseResult.fixture = this.testProject;
             testCaseResult.state = ConvertToTestState(tc.Attribute("result").Value);
             testCaseResult.time = Convert.ToInt64(Convert.ToDouble(tc.Attribute("duration").Value) * 1000);
             testCaseResult.durationMicroseconds = Convert.ToInt64(Convert.ToDouble(tc.Attribute("duration").Value) * 1000000);
             testCaseResult.className = tc.Attribute("classname").Value;
+
+            var props = tc.Element("properties").Elements();
+            foreach (var prop in props)
+            {
+                if (prop.Attribute("name").Value == "Image" || prop.Attribute("name").Value == "DiffImage")
+                {
+                    var imageName = prop.Attribute("value").Value;
+
+                    testCaseResult.artifacts.Add(imageName);
+                }
+            }
+
             if (testCaseResult.state != 4)
             {
                 var messageElement = tc.Descendants("message");
