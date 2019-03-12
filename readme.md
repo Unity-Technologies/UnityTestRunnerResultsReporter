@@ -1,5 +1,7 @@
 # Unity Test Runner Results Reporter
-The Unity Test Runner Results Reporter is a .NET Core assmebly that, when invoked with the correct parameters, parses test results from Unity Test Runner results .xml file formate (e.g. Unity.exe -runTests ...) and generates an html report.
+The Unity Test Runner Results Reporter is a .NET Core assembly that, when invoked with the correct parameters, parses test results from Unity Test Runner results .xml file formate (e.g. Unity.exe -runTests ...) and generates an html report.
+
+In order to invoke the test results reporter, you'll need to ensure you've downloaded the latest [.NET Core SDK](https://dotnet.microsoft.com/download).
 
 ## Usage
 
